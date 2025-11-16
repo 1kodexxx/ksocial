@@ -53,22 +53,19 @@ const createPost = async (req, res) => {
 
     await newPost.save();
 
-    // Создаем уведомление для всех пользователей о новом посте
-    await createNotificationAndEmit({
-      user: userId, // Для кого
-      actor: userId, // Кто создает
-      type: "post", // Тип уведомления
-      entityType: "post", // Тип сущности
-      entityId: newPost._id, // ID поста
-      message: `Новый пост от ${user.username}`, // Сообщение
-    });
+    // Популяция пользователя с данными
+    const populatedPost = await Post.findById(newPost._id).populate(
+      "user",
+      "_id username profilePicture email"
+    );
 
-    return response(res, 201, "Пост успешно создан", newPost);
+    return response(res, 201, "Пост успешно создан", populatedPost);
   } catch (error) {
     console.error("❌ Ошибка при создании поста:", error);
     return response(res, 500, "Внутренняя ошибка сервера", error.message);
   }
 };
+
 /**
  * Создание сторис
  * ===============
@@ -136,7 +133,7 @@ const getAllPosts = async (_req, res) => {
   try {
     const posts = await Post.find()
       .sort({ createdAt: -1 })
-      .populate("user", "_id username profilePicture email")
+      .populate("user", "_id username profilePicture email") // Добавлено популяция данных о пользователе
       .populate({
         path: "comments.user",
         select: "username profilePicture",

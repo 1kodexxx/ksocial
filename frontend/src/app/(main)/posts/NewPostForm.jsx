@@ -40,7 +40,7 @@ const MAX_IMAGE_MB = 8;
 const MAX_VIDEO_MB = 64;
 
 const NewPostForm = ({ isPostFormOpen, setIsPostFormOpen }) => {
-  const { user } = useUserStore();
+  const { user, loadingUser } = useUserStore(); // loadingUser — новое состояние, указывающее на процесс загрузки
   const { handleCreatePost } = usePostStore();
 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -85,7 +85,7 @@ const NewPostForm = ({ isPostFormOpen, setIsPostFormOpen }) => {
       setPostContent("");
       setError("");
     }
-  }, [isPostFormOpen]); // eslint-disable-line
+  }, [isPostFormOpen]);
 
   /**
    * Проверка файла по типу и размеру
@@ -187,6 +187,10 @@ const NewPostForm = ({ isPostFormOpen, setIsPostFormOpen }) => {
   };
 
   const placeholder = `Что у вас нового, ${user?.username || "пользователь"}?`;
+
+  if (loadingUser) {
+    return <div>Загрузка...</div>; // пока данные о пользователе не загрузились
+  }
 
   return (
     <Card>

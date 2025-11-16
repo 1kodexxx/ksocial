@@ -85,11 +85,12 @@ export const usePostStore = create((set, get) => ({
     try {
       const newPost = await createPost(postData);
 
+      // После создания поста, обновляем данные о пользователе и постах
       set((state) => ({
-        // общая лента
+        // Общая лента
         posts: newPost ? [newPost, ...(state.posts || [])] : state.posts,
 
-        // лента на странице профиля
+        // Лента на странице профиля
         userPosts: newPost
           ? [newPost, ...(state.userPosts || [])]
           : state.userPosts,
@@ -104,6 +105,7 @@ export const usePostStore = create((set, get) => ({
       toast.error("Не удалось создать пост");
     }
   },
+
   // Создать сторис
   handleCreateStory: async (storyData /* FormData */) => {
     set({ loading: true, error: null });

@@ -1,4 +1,4 @@
-// === src/app/store/userStore.js ===
+// frontend/store/useUserStore.js
 "use client";
 
 import { create } from "zustand";
