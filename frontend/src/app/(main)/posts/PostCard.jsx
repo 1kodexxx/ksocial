@@ -158,7 +158,6 @@ const PostCard = ({ post, isLiked, onShare, onComment, onLike }) => {
 
     try {
       await handleDeletePost(post._id);
-      toast.success("Пост удалён");
     } catch (e) {
       console.error("Ошибка при удалении поста:", e);
       toast.error("Не удалось удалить пост");

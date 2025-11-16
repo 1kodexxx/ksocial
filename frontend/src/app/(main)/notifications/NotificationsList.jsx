@@ -1,3 +1,5 @@
+"use client";
+
 import useNotificationStore from "@/app/store/useNotificationStore";
 import {
   Bell,

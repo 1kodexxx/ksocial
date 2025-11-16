@@ -1,6 +1,4 @@
 // backend/routes/notificationRoute.js
-// ===================================
-
 const express = require("express");
 const router = express.Router();
 

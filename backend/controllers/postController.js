@@ -7,6 +7,8 @@ const Story = require("../model/Story");
 const response = require("../utils/responseHandler");
 const { uploadFileToYandex } = require("../config/storage");
 const { createNotificationAndEmit } = require("../utils/notify");
+const { createAndPushNotification } = require("./notificationController");
+const User = require("../model/User");
 
 /**
  * Создание нового поста
@@ -17,11 +19,16 @@ const createPost = async (req, res) => {
   try {
     const userId = req.user?.userId;
 
-    const content =
-      req.body && typeof req.body.content === "string"
-        ? req.body.content.trim()
-        : "";
+    if (!userId) {
+      return response(res, 400, "Пользователь не авторизован");
+    }
 
+    const user = await User.findById(userId);
+    if (!user) {
+      return response(res, 404, "Пользователь не найден");
+    }
+
+    const content = req.body.content ? req.body.content.trim() : "";
     const file = req.file || null;
 
     if (!content && !file) {
@@ -46,13 +53,22 @@ const createPost = async (req, res) => {
 
     await newPost.save();
 
+    // Создаем уведомление для всех пользователей о новом посте
+    await createNotificationAndEmit({
+      user: userId, // Для кого
+      actor: userId, // Кто создает
+      type: "post", // Тип уведомления
+      entityType: "post", // Тип сущности
+      entityId: newPost._id, // ID поста
+      message: `Новый пост от ${user.username}`, // Сообщение
+    });
+
     return response(res, 201, "Пост успешно создан", newPost);
   } catch (error) {
     console.error("❌ Ошибка при создании поста:", error);
     return response(res, 500, "Внутренняя ошибка сервера", error.message);
   }
 };
-
 /**
  * Создание сторис
  * ===============

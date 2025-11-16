@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../model/User");
 const { generateToken } = require("../utils/generateToken");
 const response = require("../utils/responseHandler");
+const { createAndPushNotification } = require("./notificationController"); // Импортируем уведомления
 
 // Общие настройки для cookies с токеном
 // В DEV (localhost) — SameSite=Lax, без secure
@@ -61,6 +62,16 @@ const registerUser = async (req, res) => {
     // Ставим токен в httpOnly cookie
     res.cookie("auth_token", accessToken, getCookieOptions());
 
+    // Отправляем уведомление всем пользователям о новом пользователе
+    await createAndPushNotification({
+      userId: newUser._id,
+      actorId: newUser._id,
+      type: "new_user",
+      entityType: "user",
+      entityId: newUser._id,
+      message: `${newUser.username} теперь с нами, новый пользователь!`,
+    });
+
     return response(res, 201, "Пользователь успешно создан", {
       id: newUser._id,
       username: newUser.username,
@@ -68,11 +79,10 @@ const registerUser = async (req, res) => {
       profilePicture: newUser.profilePicture,
     });
   } catch (error) {
-    console.error("❌ Ошибка в registerUser:", error);
+    console.error("❌ Ошибка при регистрации пользователя:", error);
     return response(res, 500, "Внутренняя ошибка сервера", error.message);
   }
 };
-
 /**
  * POST /auth/login
  * ====================

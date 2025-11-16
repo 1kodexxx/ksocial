@@ -1,6 +1,4 @@
 // backend/controllers/notificationController.js
-// =============================================
-
 const Notification = require("../model/Notification");
 
 /**
@@ -27,7 +25,7 @@ const createAndPushNotification = async ({
     message,
   });
 
-  // подтягиваем инфу об акторе
+  // Подтягиваем инфу об акторе
   const populated = await notification.populate(
     "actor",
     "_id username profilePicture email"
@@ -48,13 +46,13 @@ const createAndPushNotification = async ({
     },
   };
 
+  // Если WebSocket доступен, отправляем уведомление
   if (global.io) {
     global.io.to(`user:${userId}`).emit("notification:new", payload);
   }
 
   return payload;
 };
-
 /**
  * GET /notifications
  * Список уведомлений текущего пользователя
