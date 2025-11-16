@@ -12,6 +12,7 @@ import {
   Video,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import useSidebarStore from "../../app/store/useSidebarStore";
 import useUserStore from "../../app/store/useUserStore";
 
@@ -19,11 +20,22 @@ const LeftSideBar = () => {
   const { isSidebarOpen, toggleSidebar } = useSidebarStore();
   const router = useRouter();
   const { user } = useUserStore();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  const handleChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   const handleNavigation = (path) => {
     router.push(path);
 
-    // На мобиле — закрываем меню после перехода
+    // На мобилке — закрываем меню после перехода
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       toggleSidebar();
     }
@@ -47,8 +59,7 @@ const LeftSideBar = () => {
   return (
     <aside
       aria-label="Навигация по kSocial"
-      className={`
-        fixed top-16 left-0 h-[calc(100vh-4rem)]
+      className={`fixed top-16 left-0 h-[calc(100vh-4rem)]
         w-64
         border-r border-border/40 
         bg-white dark:bg-[rgb(36,37,38)]
@@ -60,7 +71,7 @@ const LeftSideBar = () => {
       `}
     >
       <div className="flex h-full flex-col justify-between overflow-y-auto px-3 py-4">
-        {/* ===== Верх: профиль + меню ===== */}
+        {/* Верх: профиль + меню */}
         <nav className="space-y-3">
           {/* Профиль наверху */}
           <div
@@ -92,12 +103,10 @@ const LeftSideBar = () => {
               <Button
                 key={label}
                 variant="ghost"
-                className="
-                  w-full justify-start rounded-lg font-normal text-sm
-                  text-gray-800 dark:text-gray-200
-                  hover:bg-accent/80 hover:text-accent-foreground
-                  transition-colors px-2
-                "
+                className="w-full justify-start rounded-lg font-normal text-sm
+                text-gray-800 dark:text-gray-200
+                hover:bg-accent/80 hover:text-accent-foreground
+                transition-colors px-2"
                 onClick={() => handleNavigation(path)}
               >
                 <Icon className="mr-3 h-5 w-5 flex-shrink-0" />
@@ -107,7 +116,7 @@ const LeftSideBar = () => {
           </div>
         </nav>
 
-        {/* ===== Низ: повтор профиля + выход ===== */}
+        {/* Низ: повтор профиля + выход */}
         <div className="pt-4 border-t border-border/40 mt-2">
           <div className="flex items-center gap-3 mb-3 px-2">
             <Avatar className="h-9 w-9 flex-shrink-0">
@@ -129,12 +138,10 @@ const LeftSideBar = () => {
 
           <button
             type="button"
-            className="
-              w-full flex items-center justify-start
+            className="w-full flex items-center justify-start
               rounded-lg px-2 py-1.5 text-sm font-medium
               text-red-500 hover:text-red-600 hover:bg-red-500/10
-              transition-colors
-            "
+              transition-colors"
             onClick={() => handleNavigation("/logout")}
           >
             <LogOut className="h-4 w-4 mr-2" />

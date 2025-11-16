@@ -11,8 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import useSidebarStore from "@/app/store/useSidebarStore"; // 👈 NEW
+import useSidebarStore from "@/app/store/useSidebarStore";
 import useUserStore from "@/app/store/useUserStore";
+import { useState } from "react";
 
 import { logout } from "@/service/auth.service";
 import { motion } from "framer-motion";
@@ -33,15 +34,24 @@ import toast from "react-hot-toast";
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const { user, clearUser } = useUserStore();
-  const { toggleSidebar } = useSidebarStore(); // 👈 NEW
+  const { toggleSidebar } = useSidebarStore();
   const router = useRouter();
   const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const initials =
     user?.username
       ?.split(" ")
       .map((n) => n[0]?.toUpperCase())
       .join("") || "U";
+
+  // Обработчик для поиска
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      // Переходим на страницу поиска с результатами
+      router.push(`/search?q=${searchQuery}`);
+    }
+  };
 
   const goTo = (path) => router.push(path);
 
@@ -127,18 +137,10 @@ const Header = () => {
                 <input
                   type="text"
                   placeholder="Поиск в kSocial…"
-                  className="
-                    w-full h-10 pl-9 pr-3
-                    rounded-full
-                    bg-muted
-                    border border-border
-                    text-sm
-                    placeholder:text-muted-foreground
-                    focus:outline-none
-                    focus:ring-2 focus:ring-[hsl(var(--ring))]
-                    focus:border-transparent
-                    transition
-                  "
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="w-full h-10 pl-9 pr-3 rounded-full bg-muted border border-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] focus:border-transparent transition"
                 />
               </div>
             </div>

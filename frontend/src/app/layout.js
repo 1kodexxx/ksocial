@@ -21,9 +21,9 @@ export const metadata = {
   title: "kSocial",
   description: "Making clone of Facebook",
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: "../../public/images/favicon.ico",
+    shortcut: "../../public/images/favicon.ico",
+    apple: "../../public/images/favicon.ico",
   },
 };
 
